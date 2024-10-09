@@ -10,5 +10,34 @@ void calculate_sums(int numbers[28]) {
 			}
 		}
 	}
+	int lucky_tickets = 0;
+	for (int sum = 0; sum < 28; sum++) {
+		lucky_tickets += numbers[sum] * numbers[sum];
+	}
+	printf("Lucky tickets: %d/n", lucky_tickets);
+}
+
+bool test_calculate_sums() {
+	int numbers[28] = { 0 };
+	calculate_sums(numbers);
+	if (numbers[0] != 1)
+		return false;
+	if (numbers[9] != 73)
+		return false;
+	if (numbers[27] != 1)
+		return false;
+	return true;
+}
+
+
+int main(void) {
+	if (test_calculate_sums()) {
+		printf("Тест функции пройден!/n");
+	} else {
+		printf("Ошибка в функции calculate_sums!/n");
+	}
+	int numbers[28] = { 0 };
+	calculate_sums(numbers);
+	return 0;
 }
 

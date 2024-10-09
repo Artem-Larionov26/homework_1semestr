@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="null_elements.cpp">
+    <ClCompile Include="null_elements.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
