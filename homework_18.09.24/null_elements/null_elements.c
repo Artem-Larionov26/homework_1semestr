@@ -1,15 +1,17 @@
 ﻿#include <stdio.h>
-#include <stdbool.h>
 
-void nullElements(int array[]) {
-    int counter = 0;
-    while (array[counter] == 0) {
-        ++counter;
-    }
-    printf("\nNull elements:\n array size: %d\n----------", counter);
+void countNullElements(int array[], int arraySize) {
+	int countNullElements = 0;
+	for (int i = 0; i < arraySize; i++) {
+		if (array[i] == 0) {
+			countNullElements++;
+		}
+	}
+	printf("The number of zero elements in the array: %d\n", countNullElements);
 }
 
 int main(void) {
-    int arrayForNullElements[31] = { 0 };
-    nullElements(arrayForNullElements);
+	int array[] = { 0, 1, 0, 4, 5, 0, 0, 0, 8, 0, 9, 3 };
+	int arraySize = sizeof(array) / sizeof(array[0]);
+	countNullElements(array, arraySize);
 }
