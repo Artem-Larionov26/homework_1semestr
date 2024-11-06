@@ -16,6 +16,7 @@ void runTests() {
 	int test3[] = {1, 2, 3, 4, 5};
 	int test4[] = {0};
 
+
 	printf("Test 1: ");
 	printf(countNullElements(test1, 5) == 2 ? "Passed\n" : "Failed\n");
 	printf("Test 2: ");
