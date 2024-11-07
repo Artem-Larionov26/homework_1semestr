@@ -31,4 +31,5 @@ int main() {
 	setlocale(LC_ALL, "Rus");
 	int result = incompleteQuotient(18, -8);
 	printf("Неполное частное: %d\n", result);
+	return 0;
 }
