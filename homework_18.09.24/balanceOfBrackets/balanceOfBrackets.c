@@ -1,6 +1,6 @@
-﻿#include<stdio.h>
-#include<stdbool.h>
-#include<string.h>
+﻿#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 
 bool isBalanced(const char* str) {
 	int balance = 0;
@@ -31,7 +31,7 @@ void runTests() {
 		"(",
 	};
 	bool expected[] = { true, true, true, false, false, true, true, false, false, false };
-	int numTests = 10;
+	const int numTests = 10;
 	for (int i = 0; i < numTests; i++) {
 		bool result = isBalanced(tests[i]);
 		printf("Test %d: string \"%s\" -> %s (expected %s)\n", i + 1, tests[i], result ? "Balanced" : "Unbalanced", expected[i] ? "Balanced" : "Unbalanced");
@@ -39,13 +39,20 @@ void runTests() {
 }
 
 int main() {
-	char example[] = {"(())()))"};
-	printf("The original string: %s\n", example);
-	if (isBalanced(example)) {
-		printf("The brackets are balanced\n");
-	} else {
-		printf("The brackets are unbalanced\n");
-	}
 	runTests();
+	char stringForTheUser[100];
+	printf("Enter a string to check the balance of the brackets: ");
+	if (fgets(stringForTheUser, sizeof(stringForTheUser), stdin)) {
+		size_t len = strlen(stringForTheUser);
+		if (len > 0 && stringForTheUser[len - 1] == '\n') {
+			stringForTheUser[len - 1] = '\0';
+		}
+	}
+	printf("The entered string: %s\n", stringForTheUser);
+	if (isBalanced(stringForTheUser)) {
+		printf("The brackets are balanced!\n");
+	} else {
+		printf("The brackets aren't balanced!\n");
+	}
 	return 0;
 }
