@@ -50,9 +50,9 @@ int main() {
 	}
 	printf("The entered string: %s\n", stringForTheUser);
 	if (isBalanced(stringForTheUser)) {
-		printf("The brackets are balanced!\n");
+		printf("The brackets are balanced! \n");
 	} else {
-		printf("The brackets aren't balanced!\n");
+		printf("The brackets aren't balanced! \n");
 	}
 	return 0;
 }
