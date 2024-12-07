@@ -1,7 +1,7 @@
-﻿#include<stdio.h>
-#include<time.h>
-#include<stdlib.h>
-#include<stdbool.h>
+﻿#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 void swap(int* left, int* right) {
 	if (left != right) {
@@ -23,7 +23,7 @@ void bubbleSort(int *array, int size) {
 
 void fillArray(int *array, int size) {
 	for (int i = 0; i < size; i++) {
-		array[i] = rand() % 10000;
+		array[i] = rand() % 100000;
 	}
 }
 
@@ -88,18 +88,20 @@ bool testForSortingByCounting() {
 	
 
 int main(void) {
-	if (!bubbleSortingTest() && !testForSortingByCounting()) {
+	if (!bubbleSortingTest() || !testForSortingByCounting()) {
 		printf("Tests failed\n");
 		return -1;
-	} else {
-		printf("Tests passed\n");
 	}
-	int size = 10000;
+	printf("Tests passed\n");
+	const int size = 100000;
 	int* originalArray = (int*)malloc(size * sizeof(int));
 	int* bubbleArray = (int*)malloc(size * sizeof(int));
 	int* countingArray = (int*)malloc(size * sizeof(int));
 	if (originalArray == NULL || bubbleArray == NULL || countingArray == NULL) {
 		printf("Memory allocation error for the array\n");
+		free(originalArray);
+		free(bubbleArray);
+		free(countingArray);
 		return -1;
 	}
 	srand(time(0));
