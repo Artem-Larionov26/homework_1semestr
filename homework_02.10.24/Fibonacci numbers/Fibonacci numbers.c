@@ -1,7 +1,7 @@
-﻿#include<stdio.h>
-#include<stdlib.h>
-#include<stdbool.h>
-#include<time.h>
+﻿#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
 
 int recursivelyFibonacci(int number) {
 	if (number == 0) {
@@ -15,18 +15,16 @@ int recursivelyFibonacci(int number) {
 int iterativelyFibonacci(int number) {
 	if (number == 0) {
 		return 0;
-	} else if (number <= 2) {
-		return 1;
+	} 
+	int previous = 0;
+	int current = 1;
+	int result = 0;
+	for (int i = 2; i <= number; i++) {
+		result = previous + current;
+		previous = current;
+		current = result;
 	}
-	int variable1 = 1;
-	int variable2 = 1;
-	int res = 0;
-	for (int i = 3; i <= number; i++) {
-		res = variable1 + variable2;
-		variable1 = variable2;
-		variable2 = res;
-	}
-	return variable2;
+	return current;
 }
 
 void comparePerfomance() {
@@ -46,7 +44,26 @@ void comparePerfomance() {
 	printf("Recursively: %f seconds\nIteratively: %f seconds\n", recTime, iterTime);
 }
 
-bool comparingArrays(int array1[], int array2[], int size) {
+void analyzePerformance() {
+	int number = 0;
+	while (number < 50) { 
+		clock_t startRec = clock();
+		recursivelyFibonacci(number);
+		clock_t endRec = clock();
+		double recTime = (double)(endRec - startRec) / CLOCKS_PER_SEC;
+		clock_t startIter = clock();
+		iterativelyFibonacci(number);
+		clock_t endIter = clock();
+		double iterTime = (double)(endIter - startIter) / CLOCKS_PER_SEC;
+		if (recTime > 0.01 && recTime > iterTime * 2) {
+			printf("\nNoticeable slowdown starts at Fibonacci number: %d\n", number);
+			break;
+		}
+		number++;
+	}
+}
+
+bool compareArrays(int array1[], int array2[], int size) {
 	for (int i = 0; i < size; i++) {
 		if (array1[i] != array2[i]) {
 			return false;
@@ -61,7 +78,7 @@ bool testRecursively() {
 	for (int i = 0; i < 8; i++) {
 		array[i] = recursivelyFibonacci(i);
 	}
-	return comparingArrays(array, arrayFib, 8);
+	return compareArrays(array, arrayFib, 8);
 }
 
 bool testIteratively() {
@@ -70,14 +87,16 @@ bool testIteratively() {
 	for (int i = 0; i < 8; i++) {
 		array[i] = iterativelyFibonacci(i);
 	}
-	return comparingArrays(array, arrayFib, 8);
+	return compareArrays(array, arrayFib, 8);
 }
 
 int main(void) {
-	if (!testRecursively && !testIteratively) {
+	if (!testRecursively() || !testIteratively()) {
 		printf("Test failed!\n");
 		return -1;
 	}
+	printf("Test passed!\n");
 	comparePerfomance();
+	analyzePerformance();
 	return 0;
 }
