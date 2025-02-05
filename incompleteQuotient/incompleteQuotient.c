@@ -30,7 +30,6 @@ int incompleteQuotient(int a, int b) {
     }
 }
 
-
 bool runTests(void) {
     if (incompleteQuotient(10, 3) != 3) {
         return false;
@@ -58,7 +57,6 @@ bool runTests(void) {
     }
     return true;
 }
-
 
 int main(void) {
 	setlocale(LC_ALL, "Rus");
