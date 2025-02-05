@@ -59,8 +59,8 @@ bool runTests(void) {
 }
 
 int main(void) {
-	setlocale(LC_ALL, "Rus");
-	if (!runTests()) {
+    setlocale(LC_ALL, "Rus");
+    if (!runTests()) {
         printf("Some tests failed! Program won't run.\n");
         return 0;
     }
