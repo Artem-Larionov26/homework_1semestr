@@ -14,7 +14,6 @@ bool testPush() {
     if (isEmpty(stack) || stack->head->value != 10) {
         return false;
     }
-
     push(stack, 20);
     return !(isEmpty(stack) || stack->head->value != 20 || stack->head->next->value != 10);
 }
@@ -24,11 +23,9 @@ bool testPop() {
     push(stack, 10);
     push(stack, 20);
     pop(stack);
-
     if (isEmpty(stack) || stack->head->value != 10) {
         return false;
     }
-
     pop(stack);
     return isEmpty(stack);
 }
@@ -38,12 +35,20 @@ bool testIsEmpty() {
     if (!isEmpty(stack)) {
         return false;
     }
-
     push(stack, 10);
     if (isEmpty(stack)) {
         return false;
     }
-
     pop(stack);
     return isEmpty(stack);
+}
+
+bool testGetValue() {
+    Stack* stack = createStack();
+    push(stack, 1);
+    if (getValue(stack) == 1) {
+        free(stack);
+        return true;
+    }
+    return false;
 }

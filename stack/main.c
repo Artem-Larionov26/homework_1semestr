@@ -3,7 +3,7 @@
 #include "testStack.h"
 
 int main(void) {
-    if (!testCreateStack() || !testPush() || !testPop() || !testIsEmpty()) {
+    if (!testCreateStack() || !testPush() || !testPop() || !testIsEmpty() || !testGetValue()) {
         printf("Tests failed!\n");
         return 1;
     }

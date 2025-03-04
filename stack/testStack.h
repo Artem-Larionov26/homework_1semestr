@@ -5,11 +5,14 @@
 // Function that creates a stack and verifies that it is not NULL 
 bool testCreateStack();
 
-// Function that tests adding an item to the stack
+// Function that tests adding an element to the stack
 bool testPush();
 
-// Function that tests the removal of an item from the stack
+// Function that tests the removal of an element from the stack
 bool testPop();
 
-// Function tests to see if the stack is empty
+// Function that tests to see if the stack is empty
 bool testIsEmpty();
+
+// Function that tests getting an element from the stack
+bool testGetValue();

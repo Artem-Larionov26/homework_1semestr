@@ -29,3 +29,10 @@ Stack* createStack() {
 bool isEmpty(Stack* stack) {
     return stack->head == NULL;
 }
+
+int getValue(Stack* stack) {
+    if (stack->head == NULL) {
+        return;
+    }
+    return stack->head->value;
+}

@@ -25,3 +25,6 @@ void pop(Stack* stack);
 
 // Function checks if the stack is empty
 bool isEmpty(Stack* stack);
+
+// Function that gets the value of the stack element
+int getValue(Stack* stack);
