@@ -2,26 +2,23 @@
 
 #include <stdbool.h>
 
-// Function that checks the creation of a list
-bool testCreateList();
+// Function that checks the creation of an empty list
+bool testInitList();
 
-// Function that verifies the correct addition of an element and the return of its value
-bool testGetValue();
+// Function that checks the insertion of a single element
+bool testSingleInsert();
 
-// Function that checks whether an element is correctly added to the head of the list
-bool testAddInHead();
+// Function that checks the sorting during insertion
+bool testSortedInsert();
 
-// Function that checks whether an element is correctly added to the tail of the list
-bool testAddInTail();
+// Function that checks the deletion of an existing value
+bool testDeleteExisting();
 
-// Function that verifies the correct addition of an element
-bool testAddValue();
+// Function that checks for deletion from an empty list
+bool testDeleteFromEmpty();
 
-// Function that verifies the correct deletion of an element from the list
-bool testDeleteElement();
-
-// Function that verifies the correct return of an element by index
-bool testGetElement();
+// Function that checks access to an element by position
+bool testAccessElement();
 
 // Function that combines all of the above functions
 bool testList();

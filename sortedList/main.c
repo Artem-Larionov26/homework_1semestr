@@ -1,4 +1,6 @@
-﻿#include <stdio.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
 #include <stdbool.h>
 #include "list.h"
 #include "testsList.h"
@@ -8,62 +10,52 @@ int main() {
         printf("Test falied!\n");
         return 1;
     }
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    int operationNumber = 7;
-    if (errorCode == 1) {
-        printf("Memory allocation error!\n");
+    SortedList* list = initList();
+    if (list == NULL) {
+        printf("Error: couldn't create a list!\n");
         return 1;
     }
-    while (operationNumber != 0) {
-        printf("Enter operation number: ");
-        scanf("%d", &operationNumber);
-        if (operationNumber == 0) {
-            deleteList(list);
+    int choice = 9;
+    do {
+        printf("\nSelect an action:\n");
+        printf("0 - exit\n");
+        printf("1 - add a value to the sorted list\n");
+        printf("2 - delete a value from the list\n");
+        printf("3 - print the list\n");
+        printf("Your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+        case 0:
+            freeList(list);
+            printf("The work is completed!\n");
             return 0;
-        }
-        else if (operationNumber == 1) {
-            int value = 0;
-            printf("Enter value: ");
+        case 1: {
+            int value;
+            printf("Enter the value to add: ");
             scanf("%d", &value);
-            Position position = firstElement(list);
-            if (getSizeList(list) == 0) {
-                addInTail(list, value, &errorCode);
-                if (errorCode == 1) {
-                    printf("Memory allocation error!\n");
-                    return 1;
-                }
+            insertSorted(list, value);
+            printf("The element %d has been added!\n", value);
+            break;
+        }
+        case 2: {
+            int value;
+            printf("Enter the value to delete: ");
+            scanf("%d", &value);
+            if (deleteValue(list, value)) {
+                printf("The element %d has been deleted!\n", value);
             }
             else {
-                while (getValue(list, position) < value) {
-                    position = next(position);
-                }
-                addValue(list, position, value, &errorCode);
-                if (errorCode == 1) {
-                    printf("Memory allocation error!\n");
-                    return 1;
-                }
+                printf("The element %d was not found or the list is empty!\n", value);
             }
+            break;
         }
-        else if (operationNumber == 2) {
-            if (getSizeList(list) > 0) {
-                deleteElement(list, firstElement(list));
-            }
-            else {
-                printf(" There are no elements in the array!\n");
-            }
+        case 3:
+            printf("The current list: ");
+            printList(list);
+            break;
+        default:
+            printf("Wrong choice! Enter a number from 0 to 3!\n");
         }
-        else if (operationNumber == 3) {
-            printf("Sorted list:\n");
-            if (getSizeList(list) == 0) {
-                printf(" The list is empty!\n");
-            }
-            else {
-                for (Position i = firstElement(list); !isLast(list, i); i = next(i)) {
-                    printf("%d ", getValue(list, i));
-                }
-                printf("\n");
-            }
-        }
-    }
+    } while (choice != 0);
+    return 0;
 }

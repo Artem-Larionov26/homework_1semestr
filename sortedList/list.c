@@ -1,121 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
-#include <assert.h>
 #include "list.h"
 
-typedef struct ListElement {
-    int value;
-    ListElement* next;
-}ListElement;
-
-typedef struct List {
-    ListElement* head;
-    ListElement* tail;
-    int size;
-}List;
-
-List* createList(int* errorCode) {
-    List* list = malloc(sizeof(List));
-    ListElement* head = calloc(1, sizeof(ListElement));
-    ListElement* tail = calloc(1, sizeof(ListElement));
-    if (list == NULL || head == NULL || tail == NULL) {
-        *errorCode = 1;
+SortedList* initList() {
+    SortedList* list = malloc(sizeof(SortedList));
+    if (list == NULL) {
+        printf("Memory allocation error!\n");
         return NULL;
     }
-    list->head = head;
-    list->head->next = NULL;
-    list->tail = head;
-    list->tail->next = NULL;
-    list->size = 0;
+    list->head = NULL;
     return list;
 }
 
-int addValue(List* list, Position position, int value, int* errorCode) {
-    ListElement* element = malloc(sizeof(ListElement));
-    if (element == NULL) {
-        *errorCode = 1;
+void insertSorted(SortedList* list, int value) {
+    Node* newNode = malloc(sizeof(Node));
+    if (newNode == NULL) {
+        printf("Memory allocation error!\n");
+        return;
+    }
+    newNode->data = value;
+    if (list->head == NULL || list->head->data >= value) {
+        newNode->next = list->head;
+        list->head = newNode;
+        return;
+    }
+
+    Node* current = list->head;
+    while (current->next != NULL && current->next->data < value) {
+        current = current->next;
+    }
+    newNode->next = current->next;
+    current->next = newNode;
+}
+
+int deleteValue(SortedList* list, int value) {
+    if (list->head == NULL) {
+        printf("List is empty!\n");
         return 0;
     }
-    element->value = value;
-    if (position != NULL) {
-        element->next = position->next;
-        position->next = element;
-        if (list->size == 0) {
-            list->tail = element;
-            list->head->next = element;
-        }
-        ++list->size;
+    Node* current = list->head;
+    if (current->data == value) {
+        list->head = current->next;
+        free(current);
+        return 1;
     }
-}
-
-Position firstElement(List* list) {
-    return list->head;
-}
-
-void addInHead(List* list, int value, int* errorCode) {
-    addValue(list, firstElement(list), value, errorCode);
-}
-
-void addInTail(List* list, int value, int* errorCode) {
-    Position position = list->tail;
-    addValue(list, position, value, errorCode);
-    list->tail = next(position);
-}
-
-void deleteElement(List* list, Position position) {
-    ListElement* tmp = position->next;
-    position->next = position->next->next;
-    free(tmp);
-    tmp = NULL;
-    --list->size;
-}
-
-Position getElement(List* list, int index) {
-    ListElement* indexElement = list->head;
-    for (int i = 0; i < index; i++) {
-        if (indexElement->next != NULL) {
-            indexElement = indexElement->next;
-        }
-        else {
-            break;
-        }
+    while (current->next != NULL && current->next->data != value) {
+        current = current->next;
     }
-    return indexElement;
-}
-
-Value getValue(List* list, Position position) {
-    if (position->next != NULL) {
-        return position->next->value;
+    if (current->next == NULL) {
+        printf("Value not found!\n")
+        return 0;
     }
+    Node* temp = current->next;
+    current->next = temp->next;
+    free(temp);
+    return 1;
 }
 
-Value getSizeList(List* list) {
-    return list->size;
-}
-
-bool isLast(List* list, Position position) {
-    return position->next == NULL;
-}
-
-bool isValid(List* list, Position position) {
-    return position != NULL;
-}
-
-bool isEmpty(List* list) {
-    return list->head->next == NULL;
-}
-
-Position next(Position position) {
-    return position->next;
-}
-
-void deleteList(List* list) {
-    while (list->head->next != NULL) {
-        deleteElement(list, firstElement(list));
+void printList(SortedList* list) {
+    if (list->head == NULL) {
+        printf("List is empty\n");
+        return;
     }
-    free(list->head);
+    Node* current = list->head;
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+void freeList(SortedList* list) {
+    Node* current = list->head;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
     free(list);
-    list = NULL;
 }

@@ -1,89 +1,80 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
-#include "testsList.h"
+#include <stdlib.h>
 #include "list.h"
+#include "testsList.h"
 
-bool testCreateList() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    addInHead(list, 1, &errorCode);
-    bool result = (list != NULL);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testInitList() {
+    SortedList* list = initList();
+    bool isValid = (list != NULL && list->head == NULL);
+    freeList(list);
+    if (!isValid) {
+        printf("Error: testInitList failed!\n");
+    }
+    return isValid;
 }
 
-bool testGetValue() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    addInHead(list, 1, &errorCode);
-    bool result = (getValue(list, firstElement(list)) == 1);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testSingleInsert() {
+    SortedList* list = initList();
+    insertSorted(list, 42);
+    bool isValid = (list->head != NULL && list->head->data == 42 && list->head->next == NULL);
+    freeList(list);
+    if (!isValid) printf("Error: testSingleInsert failed!\n");
+    return isValid;
 }
 
-bool testAddInHead() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    addInHead(list, 1, &errorCode);
-    bool result = (getValue(list, firstElement(list)) == 1);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testSortedInsert() {
+    SortedList* list = initList();
+    insertSorted(list, 3);
+    insertSorted(list, 1);
+    insertSorted(list, 4);
+    insertSorted(list, 2);
+    bool isValid = (list->head->data == 1 &&
+        list->head->next->data == 2 &&
+        list->head->next->next->data == 3 &&
+        list->head->next->next->next->data == 4 &&
+        list->head->next->next->next->next == NULL);
+    freeList(list);
+    if (!isValid) printf("Error: testSortedInsert failed!\n");
+    return isValid;
 }
 
-bool testAddInTail() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    Position position = firstElement(list);
-    addInTail(list, 1, &errorCode);
-    addInTail(list, 2, &errorCode);
-    addInTail(list, 3, &errorCode);
-    bool result = (getValue(list, firstElement(list)) == 1);
-    deleteElement(list, position);
-    result = (getValue(list, firstElement(list)) == 2);
-    deleteElement(list, position);
-    result = (getValue(list, firstElement(list)) == 3);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testDeleteExisting() {
+    SortedList* list = initList();
+    insertSorted(list, 1);
+    insertSorted(list, 2);
+    insertSorted(list, 3);
+    int removed = deleteValue(list, 2);
+    bool isValid = (removed == 1 &&
+        list->head->data == 1 &&
+        list->head->next->data == 3 &&
+        list->head->next->next == NULL);
+    freeList(list);
+    if (!isValid) printf("Error: testRemoveExisting failed!\n");
+    return isValid;
 }
 
-bool testAddValue() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    Position position = firstElement(list);
-    addValue(list, position, 1, &errorCode);
-    addValue(list, position, 2, &errorCode);
-    bool result = (getValue(list, firstElement(list)) == 2);
-    deleteElement(list, position);
-    result = (getValue(list, firstElement(list)) == 1);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testDeleteFromEmpty() {
+    SortedList* list = initList();
+    int removed = deleteValue(list, 5);
+    bool isValid = (removed == 0 && list->head == NULL);
+    freeList(list);
+    if (!isValid) printf("Error: testRemoveFromEmpty failed!\n");
+    return isValid;
 }
 
-bool testDeleteElement() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    Position position = firstElement(list);
-    addInHead(list, 3, &errorCode);
-    addInHead(list, 2, &errorCode);
-    addInHead(list, 1, &errorCode);
-    deleteElement(list, position);
-    bool result = (getValue(list, position) == 2);
-    deleteList(list);
-    return result && errorCode == 0;
-}
-
-bool testGetElement() {
-    int errorCode = 0;
-    List* list = createList(&errorCode);
-    addInHead(list, 1, &errorCode);
-    addInHead(list, 2, &errorCode);
-    addInHead(list, 3, &errorCode);
-    bool result = (getValue(list, getElement(list, 1)) == 2);
-    deleteList(list);
-    return result && errorCode == 0;
+bool testAccessElement() {
+    SortedList* list = initList();
+    insertSorted(list, 10);
+    insertSorted(list, 20);
+    insertSorted(list, 30);
+    Node* second = list->head->next;
+    bool isValid = (second->data == 20);
+    freeList(list);
+    if (!isValid) printf("Error: testAccessElement failed!\n");
+    return isValid;
 }
 
 bool testList() {
-    return testCreateList() && testGetValue() && testAddInHead() && testAddInTail() && testAddValue() && testDeleteElement() && testGetElement();
+    return testInitList() && testSingleInsert() && testSortedInsert() && testDeleteExisting() && testDeleteFromEmpty() && testAccessElement();
 }
