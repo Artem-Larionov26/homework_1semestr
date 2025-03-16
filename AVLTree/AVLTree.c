@@ -1,293 +1,214 @@
-﻿#include <stdio.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 #include "AVLTree.h"
 
-typedef struct Node {
-    NodeValue value;
-    int height;
-    Node* leftChild;
-    Node* rightChild;
-} Node;
-
-Node* createNode(NodeValue value, int* errorCode) {
-    Node* node = calloc(1, sizeof(Node));
-    if (node == NULL) {
-        *errorCode = 1;
+AVLNode* initializeNode(const char* key, const char* value, int* error) {
+    AVLNode* newNode = malloc(sizeof(AVLNode));
+    if (!newNode) {
+        *error = 1;
         return NULL;
     }
-    node->value = value;
-    return node;
-}
-
-void addLeftChild(Node* node, Node* child) {
-    node->leftChild = child;
-}
-
-void addRightChild(Node* node, Node* child) {
-    node->rightChild = child;
-}
-
-Node* getLeftChild(Node* node) {
-    return node->leftChild;
-}
-
-Node* getRightChild(Node* node) {
-    return node->rightChild;
-}
-
-NodeValue getValue(Node* node) {
-    return node->value;
-}
-
-void addValue(Node* node, NodeValue value) {
-    node->value = value;
-}
-
-void deleteTree(Node* node) {
-    if (node == NULL) {
-        return;
+    if (key == NULL || value == NULL) {
+        *error = 1;
+        free(newNode);
+        return NULL;
     }
-    deleteTree(node->leftChild);
-    deleteTree(node->rightChild);
-    const char* textValue = node->value.value;
-    const char* textKey = node->value.key;
-    free(textKey);
-    free(textValue);
-    free(node);
+    size_t keyLen = strlen(key) + 1;
+    size_t valueLen = strlen(value) + 1;
+    newNode->key = malloc(keyLen * sizeof(char));
+    newNode->value = malloc(valueLen * sizeof(char));
+    if (!newNode->key || !newNode->value) {
+        *error = 1;
+        free(newNode->key);
+        free(newNode->value);
+        free(newNode);
+        return NULL;
+    }
+    strcpy(newNode->key, key);
+    strcpy(newNode->value, value);
+    newNode->balanceFactor = 0;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
 }
 
-int getHeight(Node* node) {
-    return node == NULL ? -1 : node->height;
+int nodeHeight(AVLNode* node) {
+    return node ? node->balanceFactor : -1;
 }
 
-int updateHeight(Node* node) {
-    if (getHeight(node->leftChild) > getHeight(node->rightChild)) {
-        return getHeight(node->leftChild) + 1;
+void refreshHeight(AVLNode* node) {
+    int leftHight = nodeHeight(node->left);
+    int rightHight = nodeHeight(node->right);
+    if (leftHight > rightHight) {
+        node->balanceFactor = leftHight + 1;
     }
     else {
-        return getHeight(node->rightChild) + 1;
+        node->balanceFactor = rightHight + 1;
     }
 }
 
-Node* smallLeftTurn(Node** node) {
-    Node* tmp = (*node)->rightChild->leftChild;
-    Node* b = (*node)->rightChild;
-    (*node)->rightChild->leftChild = (*node);
-    (*node)->rightChild = tmp;
-    return b;
+AVLNode* rotateRight(AVLNode* root) {
+    if (root == NULL) {
+        return NULL;
+    }
+    AVLNode* current = root->left;
+    if (current == NULL) {
+        return root;
+    }
+    root->left = current->right;
+    current->right = root;
+    refreshHeight(root);
+    refreshHeight(current);
+    return current;
 }
 
-Node* smallRightTurn(Node** node) {
-    Node* tmp = (*node)->leftChild->rightChild;
-    Node* b = (*node)->leftChild;
-    (*node)->leftChild->rightChild = *node;
-    (*node)->leftChild = tmp;
-    return b;
+AVLNode* rotateLeft(AVLNode* root) {
+    if (root == NULL) {
+        return NULL;
+    }
+    AVLNode* current = root->right;
+    if (current == NULL) {
+        return root;
+    }
+    root->right = current->left;
+    current->left = root;
+    refreshHeight(root);
+    refreshHeight(current);
+    return current;
 }
 
-Node* bigLeftTurn(Node** node) {
-    Node* c = (*node)->rightChild->leftChild;
-    (*node)->rightChild->leftChild = c->rightChild;
-    c->rightChild = (*node)->rightChild;
-    (*node)->rightChild = c->leftChild;
-    c->leftChild = (*node);
-    c->leftChild->height = updateHeight(c->leftChild);
-    c->rightChild->height = updateHeight(c->rightChild);
-    c->height = updateHeight(c);
-    return c;
+AVLNode* rotateBigRight(AVLNode *root) {
+    root->left = rotateRight(root->left);
+    return rotateRight(root);
 }
 
-Node* bigRightTurn(Node** node) {
-    Node* c = (*node)->leftChild->rightChild;
-    (*node)->leftChild->rightChild = c->leftChild;
-    c->leftChild = (*node)->leftChild;
-    (*node)->leftChild = c->rightChild;
-    c->rightChild = *node;
-    c->leftChild->height = updateHeight(c->leftChild);
-    c->rightChild->height = updateHeight(c->rightChild);
-    c->height = updateHeight(c);
-    return c;
+AVLNode* rotateBigLeft(AVLNode* root) {
+    root->right = rotateLeft(root->right);
+    return rotateLeft(root);
 }
 
-void treeBalancing(Node** node) {
-    if (getHeight((*node)->leftChild) - getHeight((*node)->rightChild) == -2 &&
-        getHeight((*node)->rightChild->leftChild) <= getHeight((*node)->rightChild->rightChild)) {
-        *node = smallLeftTurn(node);
-    }
-    else if (getHeight((*node)->leftChild) - getHeight((*node)->rightChild) == 2 &&
-        getHeight((*node)->leftChild->rightChild) <= getHeight((*node)->leftChild->leftChild)) {
-        *node = smallRightTurn(node);
-    }
-    else if (getHeight((*node)->leftChild) - getHeight((*node)->rightChild) == -2 &&
-        getHeight((*node)->rightChild->leftChild) > getHeight((*node)->rightChild->rightChild)) {
-        *node = bigLeftTurn(node);
-    }
-    else if (getHeight((*node)->leftChild) - getHeight((*node)->rightChild) == 2 &&
-        getHeight((*node)->leftChild->rightChild) > getHeight((*node)->leftChild->leftChild)) {
-        *node = bigRightTurn(node);
-    }
-}
-
-void addElementToTree(Node** node, NodeValue value, int* errorCode) {
-    if (*node == NULL) {
-        *node = createNode(value, errorCode);
-        return;
-    }
-    Node* leftChild = (*node)->leftChild;
-    Node* rightChild = (*node)->rightChild;
-    if (*node != NULL && !strcmp((*node)->value.key, value.key)) {
-        deleteElementByKey(node, value.key);
-        addElementToTree(node, value, errorCode);
-    }
-    else if (strcmp((*node)->value.key, value.key) == 1 && (*node)->leftChild == NULL) {
-        Node* element = createNode(value, errorCode);
-        addLeftChild(*node, element);
-        (*node)->leftChild->height = 0;
-    }
-    else if (strcmp((*node)->value.key, value.key) == -1 && (*node)->rightChild == NULL) {
-        Node* element = createNode(value, errorCode);
-        addRightChild(*node, element);
-        (*node)->rightChild->height = 0;
-    }
-    else if (strcmp((*node)->value.key, value.key) == 1) {
-        addElementToTree(&leftChild, value, errorCode);
-    }
-    else if (strcmp((*node)->value.key, value.key) == -1) {
-        addElementToTree(&rightChild, value, errorCode);
-    }
-    (*node)->height = updateHeight(*node);
-    if (abs(getHeight((*node)->leftChild) - getHeight((*node)->rightChild)) >= 2) {
-        treeBalancing(node);
-    }
-}
-
-Node* getTheMinimumElementOfTheRightNode(Node* node) {
-    if (node->leftChild != NULL && node->leftChild->leftChild != NULL) {
-        getTheMinimumElementOfTheRightNode(node->leftChild);
-    }
-    else {
-        Node* tmp = node->leftChild;
-        node->leftChild = node->leftChild->rightChild;
-        node->height = updateHeight(node);
-        return tmp;
-    }
-    node->height = updateHeight(node);
-}
-
-void deleteElementByKey(Node** node, const char* key) {
-    Node* leftChild = (*node)->leftChild;
-    Node* rightChild = (*node)->rightChild;
-    if (((*node)->leftChild != NULL && !strcmp((*node)->leftChild->value.key, key)) ||
-        ((*node)->rightChild != NULL && !strcmp((*node)->rightChild->value.key, key)) ||
-        !strcmp((*node)->value.key, key)) {
-        Node* result = NULL;
-        Node* elementParent = *node;
-        Node* element = NULL;
-        if (!strcmp((*node)->value.key, key)) {
-            element = *node;
+AVLNode* balanceTree(AVLNode* root) {
+    int difference = nodeHeight(root->left) - nodeHeight(root->right);
+    if (difference > 1) {
+        if (nodeHeight(root->left->left) >= nodeHeight(root->left->right)) {
+            return rotateRight(root);
         }
         else {
-            element = (*node)->leftChild != NULL && !strcmp(elementParent->leftChild->value.key, key) ? elementParent->leftChild : elementParent->rightChild;
-        }
-        if (element != NULL) {
-            if (element->leftChild == NULL && element->rightChild == NULL) {
-                result = NULL;
-            }
-            else if (element->leftChild != NULL && element->rightChild == NULL) {
-                result = element->leftChild;
-            }
-            else if (element->leftChild == NULL && element->rightChild != NULL) {
-                result = element->rightChild;
-            }
-            else if (element->leftChild != NULL && element->rightChild != NULL) {
-                Node* elementReplacement = NULL;
-                if (element->rightChild->leftChild != NULL) {
-                    elementReplacement = getTheMinimumElementOfTheRightNode(element->rightChild);
-                }
-                else {
-                    elementReplacement = element->rightChild;
-                    element->rightChild = NULL;
-
-                }
-                elementReplacement->leftChild = element->leftChild;
-                elementReplacement->rightChild = element->rightChild;
-                result = elementReplacement;
-            }
-            if (elementParent->leftChild == element) {
-                elementParent->leftChild = result;
-            }
-            else if (elementParent->rightChild == element) {
-                elementParent->rightChild = result;
-            }
-            else {
-                *node = result;
-            }
-            if (result != NULL) {
-                result->height = updateHeight(result);
-            }
-            if (elementParent != NULL) {
-                --elementParent->height;
-            }
-            const char* textKey = element->value.key;
-            const char* textValue = element->value.value;
-            free(textKey);
-            free(textValue);
-            free(element);
+            rotateBigRight(root);
         }
     }
-    else if (strcmp((*node)->value.key, key) == 1 && (*node)->leftChild != NULL) {
-        deleteElementByKey(&leftChild, key);
-    }
-    else if (strcmp((*node)->value.key, key) == -1 && (*node)->rightChild != NULL) {
-        deleteElementByKey(&rightChild, key);
-    }
-    if (*node != NULL) {
-        (*node)->height = updateHeight(*node);
-        if (abs(getHeight((*node)->leftChild) - getHeight((*node)->rightChild)) >= 2) {
-            treeBalancing(node);
+    else if (difference < -1) {
+        if (nodeHeight(root->right->right) >= nodeHeight(root->right->left)) {
+            return rotateLeft(root);
+        }
+        else {
+            return rotateBigLeft(root);
         }
     }
+    return root;
 }
 
-Node* findElementByKey(Node* node, const char* key) {
-    if (node == NULL) {
-        return NULL;
+AVLNode* insertElement(AVLNode* root, const char* key, const char* value, int* error) {
+    if (!root) {
+        return initializeNode(key, value, error);
     }
-    else if (!strcmp(node->value.key, key)) {
-        return node;
+    int cmp = strcmp(key, root->key);
+    if (cmp == 0) {
+        free((char*)root->value);
+        size_t valueLen = strlen(value) + 1;
+        root->value = malloc(valueLen * sizeof(char));
+        if (!root->value) {
+            *error = 1;
+            free(root->value);
+            return NULL;
+        }
+        strcpy(root->value, value);
+        return root;
     }
-    else if (strcmp(node->value.key, key) == 1 && node->leftChild != NULL) {
-        findElementByKey(node->leftChild, key);
-    }
-    else if (strcmp(node->value.key, key) == -1 && node->rightChild != NULL) {
-        findElementByKey(node->rightChild, key);
+    else if (cmp < 0) {
+        root->left = insertElement(root->left, key, value, error);
     }
     else {
+        root->right = insertElement(root->right, key, value, error);
+    }
+    refreshHeight(root);
+    return balanceTree(root);
+}
+
+AVLNode* findMin(AVLNode* root) {
+    while (root->left) {
+        root = root->left;
+    }
+    return root;
+}
+
+AVLNode* deleteElement(AVLNode* root, const char* key) {
+    if (root == NULL) {
         return NULL;
     }
-}
-
-bool presenceOfElementByKey(Node* node, const char* key) {
-    return findElementByKey(node, key) != NULL;
-}
-
-Node* findByKeyByRemove(Node* node, char* key) {
-    if (!strcmp(node->value.key, key) || node == NULL) {
-        return node;
+    if (key == NULL) {
+        return root;
     }
-    else if ((node->leftChild != NULL && !strcmp(node->leftChild->value.key, key)) ||
-        (node->rightChild != NULL && !strcmp(node->rightChild->value.key, key))) {
-        return node;
+    if (root->key == NULL) {
+        return root;
     }
-    else if (strcmp(node->value.key, key) == 1 && node->leftChild != NULL) {
-        findByKeyByRemove(node->leftChild, key);
+    int cmp = strcmp(key, root->key);
+    if (cmp < 0) {
+        root->left = deleteElement(root->left, key);
     }
-    else if (strcmp(node->value.key, key) == -1 && node->rightChild != NULL) {
-        findByKeyByRemove(node->rightChild, key);
+    else if (cmp > 0) {
+        root->right = deleteElement(root->right, key);
     }
     else {
+        AVLNode* left = root->left;
+        AVLNode* right = root->right;
+        free((char*)root->key);
+        free((char*)root->value);
+        free(root);
+        if (!right) {
+            return left;
+        }
+        AVLNode* min = findMin(right);
+        min->right = deleteElement(right, min->key);
+        min->left = left;
+        refreshHeight(min);
+        return balanceTree(min);
+    }
+    refreshHeight(root);
+    return balanceTree(root);
+}
+
+const char* getValue(AVLNode* root, const char* key) {
+    if (!root) {
         return NULL;
     }
+    int cmp = strcmp(key, root->key);
+    if (cmp == 0) {
+        return root->value;
+    }
+    else if (cmp < 0) {
+        getValue(root->left, key);
+    }
+    else {
+        getValue(root->right, key);
+    }
+}
+
+bool keyExist(AVLNode* root, const char* key) {
+    return getValue(root, key) != NULL;
+}
+
+void destroyTree(AVLNode* root) {
+    if (!root) {
+        return;
+    }
+    destroyTree(root->left);
+    destroyTree(root->right);
+    free((char*)root->key);
+    free((char*)root->value);
+    free(root);
 }

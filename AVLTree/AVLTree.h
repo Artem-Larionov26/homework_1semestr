@@ -1,71 +1,53 @@
 #pragma once
 
-typedef struct NodeValue {
+#include <stdbool.h>
+
+typedef struct AVLNode {
     const char* key;
     const char* value;
-} NodeValue;
+    int balanceFactor;
+    struct AVLNode* left;
+    struct AVLNode* right;
+} AVLNode;
 
-typedef struct Node Node;
-
-// Create a node
-Node* createNode(NodeValue value, int* errorCode);
-
-// Function that adds a left child to the parent node
-void addLeftChild(Node* node, Node* child);
-
-// Function that adds a right child to the parent node
-void addRightChild(Node* node, Node* child);
-
-// Return the left child
-Node* getLeftChild(Node* node);
-
-// Return the right child
-Node* getRightChild(Node* node);
-
-// Return the value of a node
-NodeValue getValue(Node* node);
-
-// Function that sets a new node value
-void addValue(Node* node, NodeValue value);
-
-// Function that deletes the tree
-void deleteTree(Node* node);
+// Initialize a tree node
+AVLNode* initializeNode(const char* key, const char* value, int* error);
 
 // Function that returns the height of a node
-int getHeight(Node* node);
+int nodeHeight(AVLNode* node);
 
-// Function that updates the height of a node
-int updateHeight(Node* node);
+// Function that refreshes the node height
+void refreshHeight(AVLNode* node);
 
-// Make a small left turn
-Node* smallLeftTurn(Node** node);
+// Small right turn
+AVLNode* rotateRight(AVLNode* root);
 
-// Make a small right turn
-Node* smallRightTurn(Node** node);
+// Small left turn
+AVLNode* rotateLeft(AVLNode* root);
 
-// Make a big left turn
-Node* bigLeftTurn(Node** node);
+// Big right turn
+AVLNode* rotateBigRight(AVLNode* root);
 
-// Make a big right turn
-Node* bigRightTurn(Node** node);
+// Big left turn
+AVLNode* rotateBigLeft(AVLNode* root);
 
-// Function that performs tree balancing
-void treeBalancing(Node** node);
+// Balance the tree
+AVLNode* balanceTree(AVLNode* root);
 
-// Function that adds an element to the tree
-void addElementToTree(Node** node, NodeValue value, int* errorCode);
+// Insert an element into the tree
+AVLNode* insertElement(AVLNode* root, const char* key, const char* value, int* error);
 
-// Return the minimum node element
-Node* getTheMinimumElementOfTheRightNode(Node* node);
+// Find the minimum element
+AVLNode* findMin(AVLNode* root);
 
-// Function that deletes an element by key
-void deleteElementByKey(Node** node, const char* key);
+// Delete a node from the tree
+AVLNode* deleteElement(AVLNode* root, const char* key);
 
-// Find an element by key
-Node* findElementByKey(Node* node, const char* key);
+// Searching for an element by key
+const char* getValue(AVLNode* root, const char* key);
 
-// Function that checks whether an element in the tree is found by a key
-bool presenceOfElementByKey(Node* node, const char* key);
+// Function that checks for the presence of a key
+bool keyExist(AVLNode* root, const char* key);
 
-// Find the parent of an element by key
-Node* findByKeyByRemove(Node* node, char* key);
+// Function that destroys the tree
+void destroyTree(AVLNode* root);

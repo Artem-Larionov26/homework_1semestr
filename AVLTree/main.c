@@ -1,78 +1,90 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdlib.h>
 #include "AVLTree.h"
 #include "tests.h"
 
+void readString(char* buffer, int size) {
+    fgets(buffer, size, stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
+}
+
 int main() {
-    if (!testTree()) {
-        printf("Test failed!\n");
+    if (!allTests()) {
+        printf("Error: tests failed!\n");
         return 1;
     }
-    printf("Operations\n");
-    printf("Exit: 0\n");
-    printf("Add a value for a given key to the dictionary: 1\n");
-    printf("Get the value for a given key from the dictionary: 2\n");
-    printf("Check for the specified key in the dictionary: 3\n");
-    printf("Delete the specified key and its associated value from the dictionary: 4\n");
-    int errorCode = 0;
-    Node* tree = NULL;
-    int operationNumber = 9;
-    while (operationNumber != 0) {
+    printf("Operations:\n");
+    printf("0. Exit\n");
+    printf("1. Add a value for a given key to the dictionary\n");
+    printf("2. Get the value for a given key from the dictionary\n");
+    printf("3. Check for the specified key in the dictionary\n");
+    printf("4. Delete the specified key and its associated value from the dictionary\n");
+    AVLNode* dictionary = NULL;
+    char key[30] = { 0 };
+    char value[100] = { 0 };
+    int choice = 0;
+    int error = 0;
+    while (1) {
         printf("Enter operation number: ");
-        scanf_s("%d", &operationNumber);
-        if (operationNumber == 0) {
-            deleteTree(tree);
-            return 0;
+        scanf("%d", &choice);
+        getchar();
+        switch (choice) {
+            case 0:
+                destroyTree(dictionary);
+                return 0;
+            case 1:
+                printf("Enter key: ");
+                readString(key, sizeof(key));
+                printf("Enter value: ");
+                readString(value, sizeof(value));
+                dictionary = insertElement(dictionary, key, value, &error);
+                if (error == 1) {
+                    printf("Memory allocation error!\n");
+                    error = 0;
+                }
+                else {
+                    printf("Element added successfully!\n");
+                }
+                break;
+            case 2: 
+                printf("Enter the search key: ");
+                readString(key, sizeof(key));
+                const char* result = getValue(dictionary, key);
+                if (result != NULL) {
+                    printf("Value: %s\n", result);
+                }
+                else {
+                    printf("The key was not found!\n");
+                }
+                break;
+            case 3: 
+                printf("Enter the verification key: ");
+                readString(key, sizeof(key));
+                if (keyExist(dictionary, key)) {
+                    printf("The key exists in the dictionary!\n");
+                }
+                else {
+                    printf("The key was not found!\n");
+                }
+                break;
+            case 4: 
+                printf("Enter the key to delete: ");
+                readString(key, sizeof(key));
+                if (keyExist(dictionary, key)) {
+                    dictionary = deleteElement(dictionary, key);
+                    printf("The element was successfully deleted!\n");
+                }
+                else {
+                    printf("The key was not found!\n");
+                }
+                break;
+            default: 
+                printf("Wrong choice. Try again.\n");
         }
-        else if (operationNumber == 1) {
-            const char* key = calloc(30, sizeof(char));
-            char* value = calloc(100, sizeof(char));
-            printf("Enter key: ");
-            scanf_s("%s", key, 29);
-            getchar();
-            printf("Enter value: ");
-            fgets(value, 99, stdin);
-            value[strcspn(value, "\n")] = 0;
-            NodeValue nodeValue = { key, value };
-            addElementToTree(&tree, nodeValue, &errorCode);
-            if (errorCode == 1) {
-                printf("Memory allocation error!\n");
-                return 1;
-            }
-        }
-        else if (operationNumber == 2) {
-            const char key[30] = { '\0' };
-            printf("Enter key: ");
-            scanf_s("%s", key, 29);
-            Node* elementByKey = findElementByKey(tree, key);
-            if (elementByKey != NULL) {
-                printf("%s\n", getValue(elementByKey).value);
-            }
-            else {
-                printf("There is no such element in the dictionary!\n");
-            }
-        }
-        else if (operationNumber == 3) {
-            const char key[30] = { '\0' };
-            printf("Enter key: ");
-            scanf_s("%s", key, 29);
-            if (presenceOfElementByKey(tree, key)) {
-                printf("The meaning is in the dictionary!\n");
-            }
-            else {
-                printf("The meaning is not in the dictionary!\n");
-            }
-        }
-        else if (operationNumber == 4) {
-            const char key[30] = { '\0' };
-            printf("Enter key: ");
-            scanf_s("%s", key, 29);
-            deleteElementByKey(&tree, key);
-        }
-        operationNumber = 9;
     }
+    return 0;
 }

@@ -5,125 +5,83 @@
 #include "AVLTree.h"
 #include "tests.h"
 
-bool testCreateNode(Node* node) {
-    return node != NULL;
+bool testInitializeNode() {
+    int error = 0;
+    AVLNode* node = initializeNode("testKey", "testValue", &error);
+    bool success = (node != NULL && error == 0);
+    destroyTree(node);
+    return success;
 }
 
-bool testAddLeftChildAndGetLeftChild() {
-    int errorCode = 0;
-    const char* textKey1 = calloc(20, sizeof(char));
-    const char* textKey2 = calloc(20, sizeof(char));
-    const char* textValue1 = calloc(20, sizeof(char));
-    const char* textValue2 = calloc(20, sizeof(char));
-    if (textValue1 == NULL || textValue2 == NULL || textKey1 == NULL || textKey2 == NULL) {
+bool checkLeftInsertion() {
+    int error = 0;
+    AVLNode* root = initializeNode("5", "five", &error);
+    if (!root || error != 0) {
+        destroyTree(root);
         return false;
     }
-    strcpy_s(textValue1, 19, "abcdef");
-    strcpy_s(textValue2, 19, "ghijkl");
-    NodeValue value1 = { textKey1, textValue1 };
-    NodeValue value2 = { textKey2, textValue2 };
-    Node* node = createNode(value1, &errorCode);
-    Node* child = createNode(value2, &errorCode);
-    addLeftChild(node, child);
-    bool result = (getLeftChild(node) == child);
-    deleteTree(node);
-    return result && errorCode == 0;
-}
-
-bool testAddRightChildAndGetRightChild() {
-    int errorCode = 0;
-    const char* textKey1 = calloc(20, sizeof(char));
-    const char* textKey2 = calloc(20, sizeof(char));
-    const char* textValue1 = calloc(20, sizeof(char));
-    const char* textValue2 = calloc(20, sizeof(char));
-    if (textValue1 == NULL || textValue2 == NULL || textKey1 == NULL || textKey2 == NULL) {
+    root = insertElement(root, "3", "three", &error);
+    if (error != 0) {
+        destroyTree(root);
         return false;
     }
-    strcpy_s(textValue1, 19, "abcdef");
-    strcpy_s(textValue2, 19, "ghijkl");
-    NodeValue value1 = { textKey1, textValue1 };
-    NodeValue value2 = { textKey2, textValue2 };
-    Node* node = createNode(value1, &errorCode);
-    Node* child = createNode(value2, &errorCode);
-    addRightChild(node, child);
-    bool result = (getRightChild(node) == child);
-    deleteTree(node);
-    return result && errorCode == 0;
-}
-
-bool testGetValue(Node* node) {
-    return !strcmp(getValue(node).key, "3");
-}
-
-bool testAddElementToTree(Node* node, int* errorCode) {
-    bool result = false;
-    Node* child1 = getRightChild(node);
-    Node* child2 = getLeftChild(node);
-    Node* child3 = getLeftChild(child1);
-    if (!strcmp(getValue(node).key, "3") && !strcmp(getValue(child1).key, "5") && !strcmp(getValue(child2).key, "1") && !strcmp(getValue(child3).key, "4")) {
-        result = true;
-    }
+    bool result = (root->left != NULL && strcmp(root->left->key, "3") == 0 && strcmp(root->left->value, "three") == 0 && root->right == NULL);
+    destroyTree(root);
     return result;
 }
 
-bool testFindElementByKey(Node* node, int* errorCode) {
-    bool result = false;
-    Node* child1 = getRightChild(node);
-    Node* child2 = getLeftChild(node);
-    Node* child3 = getLeftChild(child1);
-    if (findElementByKey(node, "1") == child2 && findElementByKey(node, "5") == child1 &&
-        findElementByKey(node, "3") == node && findElementByKey(node, "4") == child3 &&
-        findElementByKey(node, "10") == NULL) {
-        result = true;
+bool checkRightInsertion() {
+    int error = 0;
+    AVLNode* root = initializeNode("5", "five", &error);
+    if (!root || error != 0) {
+        destroyTree(root);
+        return false;
     }
+    root = insertElement(root, "7", "seven", &error);
+    if (error != 0) {
+        destroyTree(root);
+        return false;
+    }
+    bool result = (root->right != NULL && strcmp(root->right->key, "7") == 0 && strcmp(root->right->value, "seven") == 0 && root->left == NULL);
+    destroyTree(root);
     return result;
 }
 
-bool testDeleteElementByKey(Node** node) {
-    deleteElementByKey(node, "1");
-    Node* child1 = getRightChild(*node);
-    Node* child2 = getLeftChild(*node);
-    return !strcmp(getValue(child1).key, "5") && !strcmp(getValue(child2).key, "3");
+bool testGetValue() {
+    int error = 0;
+    AVLNode* node = initializeNode("3", "three", &error);
+    bool result = (strcmp(getValue(node, "3"), "three") == 0 && error == 0);
+    destroyTree(node);
+    return result;
 }
 
-bool testTree() {
-    bool result = false;
-    int errorCode = 0;
-    const char* textKey1 = calloc(20, sizeof(char));
-    const char* textKey2 = calloc(20, sizeof(char));
-    const char* textKey3 = calloc(20, sizeof(char));
-    const char* textKey4 = calloc(20, sizeof(char));
-    const char* textValue1 = calloc(20, sizeof(char));
-    const char* textValue2 = calloc(20, sizeof(char));
-    const char* textValue3 = calloc(20, sizeof(char));
-    const char* textValue4 = calloc(20, sizeof(char));
-    if (textValue1 == NULL || textValue2 == NULL || textKey1 == NULL ||
-        textValue3 == NULL || textValue4 == NULL || textKey2 == NULL ||
-        textKey3 == NULL || textKey4 == NULL) {
+bool testInsertElement(AVLNode* root) {
+    return (strcmp(getValue(root, "3"), "three") == 0 && strcmp(getValue(root, "5"), "five") == 0 && 
+        strcmp(getValue(root, "1"), "one") == 0 && strcmp(getValue(root, "4"), "four") == 0);
+}
+
+bool testKeyExist(AVLNode* root) {
+    return (keyExist(root, "1") && keyExist(root, "3") && keyExist(root, "4") && keyExist(root, "5") && !keyExist(root, "10"));
+}
+
+bool testDeleteElement(AVLNode* root) {
+    root = deleteElement(root, "1");
+    return (strcmp(getValue(root, "3"), "three") == 0 && strcmp(getValue(root, "5"), "five") == 0 && !keyExist(root, "1"));
+}
+
+bool allTests() {
+    int error = 0;
+    AVLNode* tree = NULL;
+    tree = insertElement(tree, "1", "one", &error);
+    tree = insertElement(tree, "5", "five", &error);
+    tree = insertElement(tree, "3", "three", &error);
+    tree = insertElement(tree, "4", "four", &error);
+    if (error != 0) {
+        destroyTree(tree);
         return false;
     }
-    strcpy_s(textValue1, 19, "qwerty");
-    strcpy_s(textValue2, 19, "asdfgh");
-    strcpy_s(textValue3, 19, "zxcvbn");
-    strcpy_s(textValue4, 19, "poiuyt");
-    strcpy_s(textKey1, 19, "1");
-    strcpy_s(textKey2, 19, "5");
-    strcpy_s(textKey3, 19, "3");
-    strcpy_s(textKey4, 19, "4");
-    NodeValue value1 = { textKey1, textValue1 };
-    Node* node = createNode(value1, &errorCode);
-    NodeValue value2 = { textKey2, textValue2 };
-    NodeValue value3 = { textKey3, textValue3 };
-    NodeValue value4 = { textKey4, textValue4 };
-    addElementToTree(&node, value2, &errorCode);
-    addElementToTree(&node, value3, &errorCode);
-    addElementToTree(&node, value4, &errorCode);
-    if (testCreateNode(node) && testAddLeftChildAndGetLeftChild() &&
-        testAddRightChildAndGetRightChild() && testGetValue(node) && testAddElementToTree(node, &errorCode) &&
-        testFindElementByKey(node, &errorCode) &&
-        testDeleteElementByKey(&node) && errorCode == 0) {
-        result = true;
-    }
-    deleteTree(node);
+    bool result = (testInitializeNode() && checkLeftInsertion() && checkRightInsertion() && testGetValue() && 
+        testInsertElement(tree) && testKeyExist(tree) && testDeleteElement(tree));
+    destroyTree(tree);
     return result;
 }
