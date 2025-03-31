@@ -17,8 +17,5 @@ bool testDeleteExisting();
 // Function that checks for deletion from an empty list
 bool testDeleteFromEmpty();
 
-// Function that checks access to an element by position
-bool testAccessElement();
-
 // Function that combines all of the above functions
 bool testList();

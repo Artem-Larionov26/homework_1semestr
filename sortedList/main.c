@@ -26,15 +26,21 @@ int main() {
         scanf("%d", &choice);
         switch (choice) {
         case 0:
-            freeList(list);
+            freeList(&list);
             printf("The work is completed!\n");
             return 0;
         case 1: {
-            int value;
+            int value = 0;
             printf("Enter the value to add: ");
             scanf("%d", &value);
-            insertSorted(list, value);
-            printf("The element %d has been added!\n", value);
+            if (insertSorted(list, value) == 0) {
+                printf("The element %d has been added.\n", value);
+            }
+            else {
+                printf("Error: couldn't add %d element due to lack of memory!\n", value);
+                freeList(&list);
+                return 1;
+            }
             break;
         }
         case 2: {
