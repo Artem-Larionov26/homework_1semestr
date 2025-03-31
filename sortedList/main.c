@@ -7,7 +7,7 @@
 
 int main() {
     if (!testList()) {
-        printf("Test falied!\n");
+        printf("Test failed!\n");
         return 1;
     }
     SortedList* list = initList();
@@ -17,7 +17,7 @@ int main() {
     }
     int choice = 9;
     do {
-        printf("\nSelect an action:\n");
+        printf("Select an action:\n");
         printf("0 - exit\n");
         printf("1 - add a value to the sorted list\n");
         printf("2 - delete a value from the list\n");
