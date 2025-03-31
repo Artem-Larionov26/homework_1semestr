@@ -48,13 +48,13 @@ int nodeHeight(AVLNode* node) {
 }
 
 void refreshHeight(AVLNode* node) {
-    int leftHight = nodeHeight(node->left);
-    int rightHight = nodeHeight(node->right);
-    if (leftHight > rightHight) {
-        node->balanceFactor = leftHight + 1;
+    int leftHeight = nodeHeight(node->left);
+    int rightHeight = nodeHeight(node->right);
+    if (leftHeight > rightHeight) {
+        node->balanceFactor = leftHeight + 1;
     }
     else {
-        node->balanceFactor = rightHight + 1;
+        node->balanceFactor = rightHeight + 1;
     }
 }
 
@@ -89,12 +89,12 @@ AVLNode* rotateLeft(AVLNode* root) {
 }
 
 AVLNode* rotateBigRight(AVLNode *root) {
-    root->left = rotateRight(root->left);
+    root->left = rotateLeft(root->left);
     return rotateRight(root);
 }
 
 AVLNode* rotateBigLeft(AVLNode* root) {
-    root->right = rotateLeft(root->right);
+    root->right = rotateRight(root->right);
     return rotateLeft(root);
 }
 
@@ -105,7 +105,7 @@ AVLNode* balanceTree(AVLNode* root) {
             return rotateRight(root);
         }
         else {
-            rotateBigRight(root);
+            return rotateBigRight(root);
         }
     }
     else if (difference < -1) {
@@ -163,11 +163,11 @@ AVLNode* deleteElement(AVLNode* root, const char* key) {
     if (root->key == NULL) {
         return root;
     }
-    int cmp = strcmp(key, root->key);
-    if (cmp < 0) {
+    int comparison = strcmp(key, root->key);
+    if (comparison < 0) {
         root->left = deleteElement(root->left, key);
     }
-    else if (cmp > 0) {
+    else if (comparison > 0) {
         root->right = deleteElement(root->right, key);
     }
     else {
@@ -193,11 +193,11 @@ const char* getValue(AVLNode* root, const char* key) {
     if (!root) {
         return NULL;
     }
-    int cmp = strcmp(key, root->key);
-    if (cmp == 0) {
+    int comparison = strcmp(key, root->key);
+    if (comparison == 0) {
         return root->value;
     }
-    else if (cmp < 0) {
+    else if (comparison < 0) {
         getValue(root->left, key);
     }
     else {
