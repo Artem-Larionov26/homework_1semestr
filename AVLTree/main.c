@@ -28,7 +28,7 @@ int main() {
     char value[100] = { 0 };
     int choice = 0;
     int error = 0;
-    while (1) {
+    while (true) {
         printf("Enter operation number: ");
         scanf("%d", &choice);
         getchar();

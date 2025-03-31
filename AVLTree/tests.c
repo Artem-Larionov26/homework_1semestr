@@ -25,7 +25,7 @@ bool checkLeftInsertion() {
         destroyTree(root);
         return false;
     }
-    bool result = (root->left != NULL && strcmp(root->left->key, "3") == 0 && strcmp(root->left->value, "three") == 0 && root->right == NULL);
+    bool result = (keyExist(root, "3") && strcmp(getValue(root, "3"), "three") == 0);
     destroyTree(root);
     return result;
 }
@@ -42,7 +42,7 @@ bool checkRightInsertion() {
         destroyTree(root);
         return false;
     }
-    bool result = (root->right != NULL && strcmp(root->right->key, "7") == 0 && strcmp(root->right->value, "seven") == 0 && root->left == NULL);
+    bool result = (keyExist(root, "7") && strcmp(getValue(root, "7"), "seven") == 0);
     destroyTree(root);
     return result;
 }

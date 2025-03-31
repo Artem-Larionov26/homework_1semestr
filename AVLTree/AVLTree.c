@@ -6,15 +6,22 @@
 #include <string.h>
 #include "AVLTree.h"
 
+typedef struct AVLNode {
+    const char* key;
+    const char* value;
+    int balanceFactor;
+    struct AVLNode* left;
+    struct AVLNode* right;
+} AVLNode;
+
 AVLNode* initializeNode(const char* key, const char* value, int* error) {
-    AVLNode* newNode = malloc(sizeof(AVLNode));
-    if (!newNode) {
+    if (key == NULL || value == NULL) {
         *error = 1;
         return NULL;
     }
-    if (key == NULL || value == NULL) {
+    AVLNode* newNode = malloc(sizeof(AVLNode));
+    if (!newNode) {
         *error = 1;
-        free(newNode);
         return NULL;
     }
     size_t keyLen = strlen(key) + 1;
@@ -116,8 +123,8 @@ AVLNode* insertElement(AVLNode* root, const char* key, const char* value, int* e
     if (!root) {
         return initializeNode(key, value, error);
     }
-    int cmp = strcmp(key, root->key);
-    if (cmp == 0) {
+    int comparison = strcmp(key, root->key);
+    if (comparison == 0) {
         free((char*)root->value);
         size_t valueLen = strlen(value) + 1;
         root->value = malloc(valueLen * sizeof(char));
@@ -129,7 +136,7 @@ AVLNode* insertElement(AVLNode* root, const char* key, const char* value, int* e
         strcpy(root->value, value);
         return root;
     }
-    else if (cmp < 0) {
+    else if (comparison < 0) {
         root->left = insertElement(root->left, key, value, error);
     }
     else {
