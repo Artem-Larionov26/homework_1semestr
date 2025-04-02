@@ -9,7 +9,7 @@
 typedef struct AVLNode {
     const char* key;
     const char* value;
-    int balanceFactor;
+    int height;
     struct AVLNode* left;
     struct AVLNode* right;
 } AVLNode;
@@ -37,24 +37,24 @@ AVLNode* initializeNode(const char* key, const char* value, int* error) {
     }
     strcpy(newNode->key, key);
     strcpy(newNode->value, value);
-    newNode->balanceFactor = 0;
+    newNode->height = 0;
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
 }
 
 int nodeHeight(AVLNode* node) {
-    return node ? node->balanceFactor : -1;
+    return node ? node->height : -1;
 }
 
 void refreshHeight(AVLNode* node) {
     int leftHeight = nodeHeight(node->left);
     int rightHeight = nodeHeight(node->right);
     if (leftHeight > rightHeight) {
-        node->balanceFactor = leftHeight + 1;
+        node->height = leftHeight + 1;
     }
     else {
-        node->balanceFactor = rightHeight + 1;
+        node->height = rightHeight + 1;
     }
 }
 

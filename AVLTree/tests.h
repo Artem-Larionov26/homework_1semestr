@@ -3,16 +3,16 @@
 #include <stdbool.h>
 
 // Function that checks the initialization of a node
-bool testInitializeNode();
+bool testInitializeNode(void);
 
 // Function that checks the insertion of the left child
-bool checkLeftInsertion();
+bool checkLeftInsertion(void);
 
 // Function that checks the insertion of the right child
-bool checkRightInsertion();
+bool checkRightInsertion(void);
 
 // Function that verifies the receipt of a value by a key
-bool testGetValue();
+bool testGetValue(void);
 
 // Function that checks the insertion of an element
 bool testInsertElement(AVLNode* root);
@@ -24,4 +24,4 @@ bool testKeyExist(AVLNode* root);
 bool testDeleteElement(AVLNode** root);
 
 // Function that verifies the correctness of all tests
-bool allTests();
+bool allTests(void);

@@ -5,7 +5,7 @@
 #include "AVLTree.h"
 #include "tests.h"
 
-bool testInitializeNode() {
+bool testInitializeNode(void) {
     int error = 0;
     AVLNode* node = initializeNode("testKey", "testValue", &error);
     bool success = (node != NULL && error == 0);
@@ -13,7 +13,7 @@ bool testInitializeNode() {
     return success;
 }
 
-bool checkLeftInsertion() {
+bool checkLeftInsertion(void) {
     int error = 0;
     AVLNode* root = initializeNode("5", "five", &error);
     if (!root || error != 0) {
@@ -30,7 +30,7 @@ bool checkLeftInsertion() {
     return result;
 }
 
-bool checkRightInsertion() {
+bool checkRightInsertion(void) {
     int error = 0;
     AVLNode* root = initializeNode("5", "five", &error);
     if (!root || error != 0) {
@@ -47,7 +47,7 @@ bool checkRightInsertion() {
     return result;
 }
 
-bool testGetValue() {
+bool testGetValue(void) {
     int error = 0;
     AVLNode* node = initializeNode("3", "three", &error);
     bool result = (strcmp(getValue(node, "3"), "three") == 0 && error == 0);
@@ -69,7 +69,7 @@ bool testDeleteElement(AVLNode* root) {
     return (strcmp(getValue(root, "3"), "three") == 0 && strcmp(getValue(root, "5"), "five") == 0 && !keyExist(root, "1"));
 }
 
-bool allTests() {
+bool allTests(void) {
     int error = 0;
     AVLNode* tree = NULL;
     tree = insertElement(tree, "1", "one", &error);
