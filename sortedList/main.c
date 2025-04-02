@@ -44,7 +44,7 @@ int main() {
             break;
         }
         case 2: {
-            int value;
+            int value = 0;
             printf("Enter the value to delete: ");
             scanf("%d", &value);
             if (deleteValue(list, value)) {

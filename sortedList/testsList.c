@@ -4,7 +4,7 @@
 #include "list.h"
 #include "testsList.h"
 
-bool testInitList() {
+bool testInitList(void) {
     SortedList* list = initList();
     bool isValid = (list != NULL);
     freeList(&list);
@@ -14,17 +14,27 @@ bool testInitList() {
     return isValid;
 }
 
-bool testSingleInsert() {
+bool testSingleInsert(void) {
     SortedList* list = initList();
+    if (list == NULL) {
+        printf("Error: testSingleInsert failed due to initList returning NULL!\n");
+        return false;
+    }
     int result = insertSorted(list, 42);
     bool isValid = (result == 0 && deleteValue(list, 42));
     freeList(&list);
-    if (!isValid) printf("Error: testSingleInsert failed!\n");
+    if (!isValid) {
+        printf("Error: testSingleInsert failed!\n");
+    }
     return isValid;
 }
 
-bool testSortedInsert() {
+bool testSortedInsert(void) {
     SortedList* list = initList();
+    if (list == NULL) {
+        printf("Error: testSortedInsert failed due to initList returning NULL!\n");
+        return false;
+    }
     insertSorted(list, 3);
     insertSorted(list, 1);
     insertSorted(list, 4);
@@ -35,11 +45,13 @@ bool testSortedInsert() {
         deleteValue(list, 4) &&
         !deleteValue(list, 5));
     freeList(&list);
-    if (!isValid) printf("Error: testSortedInsert failed!\n");
+    if (!isValid) {
+        printf("Error: testSortedInsert failed!\n");
+    }
     return isValid;
 }
 
-bool testDeleteExisting() {
+bool testDeleteExisting(void) {
     SortedList* list = initList();
     insertSorted(list, 1);
     insertSorted(list, 2);
@@ -50,19 +62,21 @@ bool testDeleteExisting() {
         deleteValue(list, 1) &&
         deleteValue(list, 3));
     freeList(&list);
-    if (!isValid) printf("Error: testRemoveExisting failed!\n");
+    if (!isValid) {
+        printf("Error: testRemoveExisting failed!\n");
+    }
     return isValid;
 }
 
-bool testDeleteFromEmpty() {
+bool testDeleteFromEmpty(void) {
     SortedList* list = initList();
     bool removed = deleteValue(list, 5);
-    bool isValid = (!removed);
+    bool isValid = !removed;
     freeList(&list);
     if (!isValid) printf("Error: testRemoveFromEmpty failed!\n");
     return isValid;
 }
 
-bool testList() {
+bool testList(void) {
     return testInitList() && testSingleInsert() && testSortedInsert() && testDeleteExisting() && testDeleteFromEmpty();
 }

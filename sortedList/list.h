@@ -7,7 +7,7 @@ typedef struct Node Node;
 typedef struct SortedList SortedList;
 
 // Initialize an empty list
-SortedList* initList();
+SortedList* initList(void);
 
 // Function that adds an item while maintaining sorting
 int insertSorted(SortedList* list, int value);

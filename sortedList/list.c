@@ -12,7 +12,7 @@ typedef struct SortedList {
     Node* head;
 } SortedList;
 
-SortedList* initList() {
+SortedList* initList(void) {
     return calloc(1, sizeof(SortedList));
 }
 
